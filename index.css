@@ -54,8 +54,22 @@ table {
     margin-top: 32px;
 }
 
+.loadedFiles {
+    display: inline-flex;
+    flex-direction: column;
+    height: fit-content;
+    width: fit-content;
+    gap: 16px;
+    margin-top: 32px;
+}
+
 .results {
     margin-bottom: 32px;
+}
+
+.results-instructions {
+    margin-bottom: 32px;
+    color: whitesmoke;
 }
 
 .input-group {

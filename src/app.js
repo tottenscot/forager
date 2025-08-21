@@ -25,7 +25,7 @@ const loadFromStorage = () => {
 }
 
 const addFile = (fileObj) => {
-    const index = fileObj.series
+    const index = fileObj.series == "" ? fileObj.name : fileObj.series
     
     if (files[index] !== undefined ) {
         console.log("series match, comparing dates")
@@ -58,23 +58,50 @@ const deleteFile = (fileIndex) => {
 }
 
 const repopulateFileDisp = () => {
-    const filesDisp = document.getElementById('added-files');
+    const filesDisp = document.getElementById('loaded-files');
     filesDisp.innerHTML = "";
-    if (Object.keys(files).length > 0) {
+    const fileCount = Object.keys(files).length;
+    if (fileCount > 0) {
+        const title = document.createElement('h3')
+        const footer = fileCount == 1 ? "file" : "files"
+        title.textContent = "Searching " + fileCount + ' ' + footer
+        title.style.color = 'white'
+        filesDisp.appendChild(title)
+
         for (const [key, value] of Object.entries(files)) {
+            const container = document.createElement('div')
+            container.style.display = 'flex'
+            container.style.flexDirection = 'row'
+            container.style.marginTop = "0px"
+            filesDisp.appendChild(container)
+
+            const label = document.createElement('div')
+            label.textContent = value.name
+            label.style.color =  "white"
+            container.appendChild(label);
+
+            const space = document.createElement('div')
+            space.style.display = 'flex'
+            space.style.flexGrow = 1
+            container.appendChild(space)
+
             const btn = document.createElement('button');
-            btn.textContent = value.name;
+            btn.textContent = "Remove";
             btn.addEventListener('click', () => {
                 console.log("selected delete", key)
                 deleteFile(key);
             });
-            filesDisp.appendChild(btn);
+            container.appendChild(btn);
         }
-        document.getElementById('files-disp').removeAttribute('hidden');
+        document.getElementById('loaded-files').removeAttribute('hidden');
+        document.getElementById('files-footer').removeAttribute('hidden');
+        document.getElementById('start-load').style.setProperty('display', 'none');
         hideIntro()
         showSearch()
     } else {
-        document.getElementById('files-disp').setAttribute('hidden', ''); 
+        document.getElementById('loaded-files').setAttribute('hidden', ''); 
+        document.getElementById('files-footer').setAttribute('hidden', ''); 
+        document.getElementById('start-load').style.removeProperty('display');
         showIntro()
         hideSearch()
     }
@@ -181,7 +208,10 @@ const dataSetFromCSV = (f, n) => {
         //treat the leading row as identifier
         if (row[0] === undefined) { continue }
 
-        rows.push( {identifier: row[0].replace(/ /g,'')  } )
+        rows.push( {
+            identifier: row[0].replace(/ /g,''),
+            content: row.slice(1)
+        } )
     }
 
     return {
@@ -196,6 +226,7 @@ const dataSetFromCSV = (f, n) => {
 const clearResults = () => {
     document.getElementById('results-content').innerHTML = "";
     document.getElementById('results').style.setProperty('display', 'none');
+    document.getElementById('results-instructions').style.removeProperty('display');
 }
 
 const changedSearch = () => {
@@ -221,8 +252,9 @@ const showResults = (matches) => {
     const display_div = document.getElementById('results-content');
     display_div.innerHTML = "";
 
-    const para = document.createElement('p')
-    para.textContent = "Found " + matches.length + " results"
+    const para = document.createElement('div')
+    const footer = matches.length == 1 ? "result" : "results"
+    para.textContent = "Found " + matches.length + " " + footer
     para.style.color =  "white"
     display_div.appendChild(para);
 
@@ -230,16 +262,89 @@ const showResults = (matches) => {
     if (matches.length  < maxResults) {
         for (result of matches) {
             console.log("results row", result)
-            const row = document.createElement('p')
-            row.textContent = result
-            row.style.color =  "white"
-            display_div.appendChild(row)
+            showResult(result, display_div)
         }
     }
 
     display_div.appendChild(document.createElement('hr'));
 
     document.getElementById('results').style.removeProperty('display');
+    document.getElementById('results-instructions').style.setProperty('display', 'none');
+}
+
+const showResult = (match, parentElement) => {
+    //should return a dict whose keys are file indexes
+    const fileMatches = lookupTable[match]
+
+    if (fileMatches === undefined ) {
+        console.log("unexpected missing files")
+        simpleResult(match, parentElement)
+        return 
+    }
+
+    const fileMatchKeys = Object.keys(fileMatches)
+
+    if (fileMatchKeys === undefined || fileMatchKeys.length == 0) {
+        console.log("unexpected files lookup result", fileMatchKeys, fileMatches)
+        simpleResult(match, parentElement)
+        return
+    }
+    const label = document.createElement('div')
+    label.textContent = match
+    label.style.color = 'white'
+    parentElement.appendChild(label)
+
+    for (matchKey of fileMatchKeys) {
+        rowResult(match, matchKey, parentElement)
+    }
+}
+
+const rowResult = (match, fileIndex, parentElement) => {
+    let fileObj = files[fileIndex]
+    if (fileObj === undefined) {
+        console.log("missing file result for ", fileIndex)
+    }
+    console.log(fileObj)
+
+    const label = document.createElement('div')
+    label.textContent = 'Found in ' + fileObj.name
+    label.style.color = 'white'
+    parentElement.appendChild(label)
+
+    //table
+    const table = document.createElement('table')
+    parentElement.appendChild(table)
+
+    //column
+    const headerRow = document.createElement('tr')
+    table.appendChild(headerRow)
+
+    for (cellLabel of fileObj.columns.slice(1)) {
+        const cell = document.createElement('th')
+        cell.textContent = cellLabel
+        headerRow.appendChild(cell)
+    }
+
+    //rows
+    for (row of fileObj.rows) {
+        if (row.identifier === match) {
+            const rowElement = document.createElement('tr')
+            table.appendChild(rowElement)
+
+            for (cellLabel of row.content) {
+                const cell = document.createElement('th')
+                cell.textContent = cellLabel
+                rowElement.appendChild(cell)
+            } 
+        }
+    }
+}
+
+const simpleResult = (matchingId, parentElement) => {
+    const row = document.createElement('p')
+    row.textContent = matchingId
+    row.style.color =  "white"
+    parentElement.appendChild(row)
 }
 
 const maxResults = 5
@@ -253,7 +358,7 @@ const loadLabel = "loadLabel"
 
 const hideIntro = () => {
     document.getElementById(introElement).style.setProperty('display', 'none')
-        document.getElementById(loadLabel).style.removeProperty('display')
+    document.getElementById(loadLabel).style.removeProperty('display')
 }
 const showIntro = () => {
     document.getElementById(introElement).style.removeProperty('display')

@@ -19,14 +19,14 @@
 
                     </div>
                 </div>
+                <div class="results-instructions" id="results-instructions">
+                    Search starts after 2 characters
+                </div>
                 <div class="results" id="results" style="display: none;">
                     <div class="results-content" id="results-content"></div>
                     <button onclick="clearResults()">Clear Results</button>
                 </div>
-
-                <br>
-                <br>
-                <div class="input-group">
+                <div class="input-group" id="start-load">
                     <label class="input-label" id="introLabel" for="search">
                         To start, load a dataset
                     </label>
@@ -41,16 +41,21 @@
                     </form>
                 </div>
 
+                <div class="loadedFiles" style="width:auto" id="loaded-files">
+                </div>
+
             </div>
 
-            <div class="files-disp" id="files-disp" hidden>
-                <h2 style="margin-bottom: 0; color: white">
-                    Added Files:
-                </h2>
-                <span style="color: white">
-                    (click to remove)
-                </span>
-                <div class="added-files" id="added-files"></div>
+            <div class="files-disp" id="files-footer" hidden>
+                <label class="input-label" for="search">
+                        Load more datasets
+                </label>
+                <form name="FileInput" class="base-form" onsubmit="submitFile(event)">
+                    <input class="file-input" id="fileinput" type="file" value="Select File" accept='.csv,.tsv'/>
+                    <label class="input-label" for="dataset">Dataset Name:</label>
+                    <input class="text-input" id="dataset" type="text" name="datasetName">
+                    <input type="submit" value="Add Selected File"/>
+                </form>
             </div>
         </div>
         <script type="text/javascript" src="./src/app.js"></script>
