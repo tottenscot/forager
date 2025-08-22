@@ -258,6 +258,8 @@ const showResults = (matches) => {
     para.style.color =  "white"
     display_div.appendChild(para);
 
+    display_div.appendChild(document.createElement('br'));
+
     console.log("matches", matches)
     if (matches.length  < maxResults) {
         for (result of matches) {
@@ -296,6 +298,7 @@ const showResult = (match, parentElement) => {
 
     for (matchKey of fileMatchKeys) {
         rowResult(match, matchKey, parentElement)
+        parentElement.appendChild(document.createElement('br'));
     }
 }
 

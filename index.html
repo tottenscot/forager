@@ -16,12 +16,12 @@
                         <form name="SearchInput" class="base-form" onsubmit="searchFiles(event)">
                             <input name ="searchField" class="text-input" id="search" type="text" oninput="changedSearch()">
                         </form>
-
+                        <div class="results-instructions" id="results-instructions">
+                            Search starts after 2 characters
+                        </div>
                     </div>
                 </div>
-                <div class="results-instructions" id="results-instructions">
-                    Search starts after 2 characters
-                </div>
+
                 <div class="results" id="results" style="display: none;">
                     <div class="results-content" id="results-content"></div>
                     <button onclick="clearResults()">Clear Results</button>
