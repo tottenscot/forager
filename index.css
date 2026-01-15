@@ -96,6 +96,10 @@ button {
     color: white;
 }
 
+.home-instructions {
+    color: white;
+}
+
 .text-input {
     font-weight: bold;
     width: 20rem;
