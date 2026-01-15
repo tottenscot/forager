@@ -92,6 +92,16 @@ const repopulateFileDisp = () => {
                 deleteFile(key);
             });
             container.appendChild(btn);
+
+            const options = {
+                month: 'short',
+                day: 'numeric'
+            };
+            const dateFormatter = new Intl.DateTimeFormat('en-US', options);
+            const dateLabel = document.createElement('div')
+            dateLabel.textContent = dateFormatter.format(value.date)
+            dateLabel.style.color =  "white"
+            container.appendChild(dateLabel);
         }
         document.getElementById('loaded-files').removeAttribute('hidden');
         document.getElementById('files-footer').removeAttribute('hidden');

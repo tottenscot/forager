@@ -19,6 +19,11 @@ table {
     background-color: white;
 }
 
+button {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
 .signin {
     display: flex;
     height: 100%;
