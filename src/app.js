@@ -304,6 +304,7 @@ const showResult = (match, parentElement) => {
     const label = document.createElement('div')
     label.textContent = match
     label.style.color = 'white'
+    label.style.textAlign = 'center'
     parentElement.appendChild(label)
 
     for (matchKey of fileMatchKeys) {
@@ -322,6 +323,7 @@ const rowResult = (match, fileIndex, parentElement) => {
     const label = document.createElement('div')
     label.textContent = 'Found in ' + fileObj.name
     label.style.color = 'white'
+    label.style.textAlign = 'center'
     parentElement.appendChild(label)
 
     //table
